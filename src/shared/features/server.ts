@@ -1,11 +1,19 @@
 import chalk from 'chalk';
 import express from 'express';
 import Hooks from './hooks';
+import { users } from 'superfast-core';
 
 const launch = async () => {
   try {
     const app = express();
     await Hooks.doAction('server/init', app);
+
+    app.get('/users', users);
+
+    app.get('/health', (req, res) => {
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.end('hello express');
+    });
 
     app.use(async (_req, res) => {
       const response = await Hooks.applyFilters(
